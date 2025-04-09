@@ -37,10 +37,22 @@ $.ajax({
       console.log(error)
     }
   })
-// 2. XMLHttpRequest
 
+// 2. XMLHttpRequest
+const req = new XMLHttpRequest();
+
+req.addEventListener('readystatechange', () => {
+  if (req.readyState === 4) {
+    console.log('xhttp', JSON.parse(req.responseText))
+  }
+})
+
+req.open('GET', url)
+req.send()
 
 
 // 3. fetch method
-
+fetch(url)
+  .then(resp => resp.json()).then(data => console.log('fetch', data))
+  .catch(err => console.log(err))
 // other popular: axios library, async await + fetch
