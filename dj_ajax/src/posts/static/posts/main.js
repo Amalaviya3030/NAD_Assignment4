@@ -13,6 +13,10 @@ const url = window.location.href
 
 const alertBox=document.getElementById('alert-box')
 
+const dropzone = document.getElementById('my-dropzone')
+const addBtn = document.getElementById('add-btn')
+const closeBtns = [...document.getElementsByClassName('add-modal-close')]
+
 const getCookie =(name) =>{
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -121,6 +125,7 @@ loadBtn.addEventListener('click', () =>{
     getData()
 })
 
+let newPostId = null
 postForm.addEventListener('submit', e=>{
     e.preventDefault()
     $.ajax({
@@ -143,7 +148,7 @@ postForm.addEventListener('submit', e=>{
                             <div class="card-footer">
                                 <div class="row">
                                     <div class="col-2">
-                                        <a href="#" class="btn btn-primary">Details</a>
+                                        <a href="${url}${el.id}/" class="btn btn-primary">Details</a>
                                     </div>
                                     <div class="col-2">
                                         <form class="like-unlike-forms" data-form-id="${response.id}">
@@ -166,5 +171,31 @@ postForm.addEventListener('submit', e=>{
         }
         })
 })
-    
+addBtn.addEventListener('click', ()=>{
+    dropzone.classList.remove('not-visible')
+})
+
+closeBtns.forEach(btn=> btn.addEventListener('click', ()=>{
+    postForm.reset()
+    if (!dropzone.classList.contains('not-visible')) {
+        dropzone.classList.add('not-visible')
+    }
+    const myDropzone = Dropzone.forElement("#my-dropzone")
+    myDropzone.removeAllFiles(true)
+}))
+
+Dropzone.autoDiscover = false
+const myDropzone = new Dropzone('#my-dropzone', {
+    url: 'upload/',
+    init: function() {
+        this.on('sending', function(file, xhr, formData) {
+            formData.append('csrfmiddlewaretoken', csrftoken)
+            formData.append('new_post_id', newPostId)
+        })
+    },
+    maxFiles: 3,
+    maxFilesize: 4,
+    acceptedFiles: '.png, .jpg, .jpeg'
+})
+
 getData()
